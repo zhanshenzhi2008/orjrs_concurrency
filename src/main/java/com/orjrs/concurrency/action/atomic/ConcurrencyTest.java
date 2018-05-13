@@ -1,4 +1,4 @@
-package com.orjrs.concurrency.action;
+package com.orjrs.concurrency.action.atomic;
 
 import com.orjrs.concurrency.annoations.UnThreadSafe;
 import lombok.extern.slf4j.Slf4j;

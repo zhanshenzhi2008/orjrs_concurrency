@@ -1,13 +1,15 @@
-package com.orjrs.concurrency.action;
+package com.orjrs.concurrency.action.atomic;
 
 import com.orjrs.concurrency.annoations.ThreadSafe;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * 并发测试
@@ -17,14 +19,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @ThreadSafe
-public class ConcurrencyTest2 {
+public class ConcurrencyTest6 {
     /** 请求总数 */
     private static int clientTotal = 5000;
 
     /** 同时并发数 */
     private static int threadTotal = 5000;
     /***/
-    private static AtomicInteger count = new AtomicInteger(0);
+    private static AtomicBoolean isABoolean =
+            new AtomicBoolean(false);
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -34,7 +37,7 @@ public class ConcurrencyTest2 {
             executor.execute(() -> {
                 try {
                     semaphore.acquire();
-                    add();
+                    test();
                     semaphore.release();
                     countDownLatch.countDown();
                 } catch (InterruptedException e) {
@@ -45,10 +48,13 @@ public class ConcurrencyTest2 {
 
         countDownLatch.await();
         executor.shutdown();
-        log.info("count:{}", count.get());
+        log.info("count:{}", isABoolean.get());
     }
 
-    private static void add() {
-        count.decrementAndGet();
+    private static void test() {
+        if (isABoolean.compareAndSet(false, true)) {
+            log.info("excute");
+        }
     }
+
 }

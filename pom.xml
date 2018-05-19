@@ -42,17 +42,23 @@
             <artifactId>lombok</artifactId>
             <version>1.16.10</version>
         </dependency>
+        <!--<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <repositories>
+            <repository>
+                <id>projectlombok.org</id>
+                <url>http://projectlombok.org/mavenrepo</url>
+            </repository>
+        </repositories>-->
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
     </dependencies>
-    <!--<dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-    </dependency>
-    <repositories>
-        <repository>
-            <id>projectlombok.org</id>
-            <url>http://projectlombok.org/mavenrepo</url>
-        </repository>
-    </repositories>-->
+
     <build>
         <plugins>
             <plugin>

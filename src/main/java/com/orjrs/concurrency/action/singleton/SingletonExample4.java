@@ -21,7 +21,7 @@ public class SingletonExample4 {
     // 2. ctorInstance() 初始化对象
     // 3. instance= memory 设置instance指向共分配的内存
 
-    // JVM和CPU优化，发生了指令重拍
+    // JVM和CPU优化，发生了指令重排序
     // 2、3步骤可能会发生变化
 
     // 单例对象

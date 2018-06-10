@@ -7,53 +7,55 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.StampedLock;
 
-/**
- * Lock demo
- *
- * @author orjrs
- * @date 2018-06-1014:43
- */
 @Slf4j
 @ThreadSafe
-public class LockDemo {
+/**
+ * stampedLock：这个所不会产生死锁
+ *
+ * @author orjrs
+ * @date 2018-06-1016:50
+ */
+public class LockDemo3 {
+
     // 请求总数
-    public static final int CLIENT_TOTAL = 5000;
+    public static int clientTotal = 5000;
+
     // 同时并发执行的线程数
-    public static final int THREAD_TOTAL = 200;
-    private static int count = 0;
-    private static Lock lock = new ReentrantLock();
+    public static int threadTotal = 200;
+
+    public static int count = 0;
+
+    private final static StampedLock lock = new StampedLock();
 
     public static void main(String[] args) throws Exception {
-        ExecutorService executor = Executors.newCachedThreadPool();
-        CountDownLatch countDownLatch = new CountDownLatch(CLIENT_TOTAL);
-        Semaphore semaphore = new Semaphore(THREAD_TOTAL);
-        for (int i = 0; i < CLIENT_TOTAL; i++) {
-            executor.execute(() -> {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        final Semaphore semaphore = new Semaphore(threadTotal);
+        final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
+        for (int i = 0; i < clientTotal; i++) {
+            executorService.execute(() -> {
                 try {
                     semaphore.acquire();
                     add();
                     semaphore.release();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     log.error("exception", e);
                 }
                 countDownLatch.countDown();
             });
         }
         countDownLatch.await();
-        executor.shutdown();
+        executorService.shutdown();
         log.info("count:{}", count);
     }
 
-    public static void add() {
-        lock.lock();
+    private static void add() {
+        long stamp = lock.writeLock();
         try {
             count++;
         } finally {
-            lock.unlock();
+            lock.unlock(stamp);
         }
-
     }
 }

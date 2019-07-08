@@ -39,7 +39,7 @@ public class ConcurrencyTest {
             }
             semaphore.acquire(); // 从信号量获取一个许可，如果无可用许可前 将一直阻塞等待，
         } catch (InterruptedException e) {
-            log.info("异常", e);
+            log.error("异常", e);
         }
         countDownLatch.await(); // 计数器必须大于等于0，只是等于0时候，计数器就是零，调用await方法时不会阻塞当前线程 ，类似线程的join
         executorService.shutdown(); //平滑的关闭ExecutorService，当此方法被调用时，ExecutorService停止接收新的任务并且等待已经提交的任务（包含提交正在执行和提交未执行）执行完成。当所有提交任务执行完毕，线程池即被关闭。
@@ -47,6 +47,7 @@ public class ConcurrencyTest {
     }
 
     private static void add() {
+        log.info("add");
         count++;
     }
 }

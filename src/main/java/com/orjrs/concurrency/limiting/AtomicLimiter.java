@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 原子 限流器
+ * 并发数限流：原子 限流器
  *
  * @author orjrs
  * @create 2019-07-03 21:26

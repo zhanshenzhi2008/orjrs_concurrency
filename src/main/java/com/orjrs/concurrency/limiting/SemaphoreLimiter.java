@@ -6,7 +6,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 信号量实现限流
+ * 并发数限流：信号量实现限流
  *
  * @author orjrs
  * @create 2019-07-07 15:34

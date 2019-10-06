@@ -42,7 +42,8 @@ public class LimiterMain {
             service.execute(() -> {
                 try {
                     //AtomicLimiter limiter = new AtomicLimiter();
-                    SemaphoreLimiter limiter = new SemaphoreLimiter();
+                    //SemaphoreLimiter limiter = new SemaphoreLimiter();
+                    QpsCountLimiter limiter = new QpsCountLimiter();
                     Thread.sleep(0L);
                     log.info("{}开始请求", Thread.currentThread().getName());
                     limiter.request();

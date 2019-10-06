@@ -1,5 +1,9 @@
 package com.orjrs.concurrency.limiting;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * QPS限流：计数器
  *
@@ -7,10 +11,11 @@ package com.orjrs.concurrency.limiting;
  * @create 2019-10-06 15:48
  * @since 1.0.0
  */
+@Slf4j
 public class QpsCountLimiter {
 
-    /** 每秒请求数：50 */
-    private static final int MAX_QPS = 50;
+    /** 每秒请求数 */
+    private static final int MAX_QPS = 10;
 
     /** 统计数 */
     private int count;
@@ -32,5 +37,24 @@ public class QpsCountLimiter {
         }
         count++;
         return MAX_QPS > count;
+    }
+
+    public void request() {
+        if (!grant()) {
+            log.info("请求用户过多，请稍后在试！" + System.currentTimeMillis() / 1000);
+            return;
+        }
+        try {
+            // 让cpu休息会儿你，否则无法测试出结果
+            TimeUnit.SECONDS.sleep(1);
+            invokeService();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void invokeService() {
+        // ...
+        log.info("{}恭喜你，访问成功...", Thread.currentThread().getName());
     }
 }

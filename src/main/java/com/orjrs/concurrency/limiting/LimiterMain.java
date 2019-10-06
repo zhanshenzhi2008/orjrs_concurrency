@@ -6,6 +6,7 @@ import org.hibernate.validator.internal.xml.MappingXmlParser;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 /**
  * 限流器入口
@@ -40,9 +41,9 @@ public class LimiterMain {
 
             service.execute(() -> {
                 try {
-                    AtomicLimiter limiter = new AtomicLimiter();
-                    // SemaphoreLimiter limiter = new SemaphoreLimiter();
-                    Thread.sleep(0);
+                    //AtomicLimiter limiter = new AtomicLimiter();
+                    SemaphoreLimiter limiter = new SemaphoreLimiter();
+                    Thread.sleep(0L);
                     log.info("{}开始请求", Thread.currentThread().getName());
                     limiter.request();
                 } catch (InterruptedException e) {

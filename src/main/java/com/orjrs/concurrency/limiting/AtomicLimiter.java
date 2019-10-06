@@ -36,6 +36,7 @@ public class AtomicLimiter {
         }
 
         try {
+            // 让cpu休息会儿你，否则无法测试出结果
             TimeUnit.SECONDS.sleep(1);
             invokeService();
         } catch (InterruptedException e) {

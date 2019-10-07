@@ -3,22 +3,20 @@ package com.orjrs.concurrency.limiting;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * QPS限流：计数器
+ * QPS限流：滑动窗口
  *
  * @author orjrs
- * @create 2019-10-06 15:48
+ * @create 2019-10-06 16:23
  * @since 1.0.0
  */
 @Slf4j
-public class QpsCountLimiter {
+public class QpsSlidingWindowLimiter {
 
     /** 每秒请求数 */
     private static final int MAX_QPS = 10;
-
-    /** 统计数 */
-    private int count;
 
     /** 开始时间 */
     private static long beginTime = System.currentTimeMillis();
@@ -26,17 +24,35 @@ public class QpsCountLimiter {
     /** 时间间隔 */
     private static final int INTERVAL = 1000;
 
-    public synchronized boolean grant() {
-        long endTime = System.currentTimeMillis();
-        // 隐患：临界值问题->比如最后1秒的后500毫秒来了50个请求，第二秒的前500毫秒来了50个请求，这时候一秒内count会变成100，结果就会出错，实际这时候的QPS为100
-        // 解决方案：滑动窗口
-        if (endTime - beginTime >= INTERVAL) {
-            count = 1;
-            beginTime = endTime;
-            return true;
+    /** 每个窗口的统计数，即 （1秒/数组长度10 = 100毫秒 ）的请求统计数 */
+    private AtomicInteger[] count = new AtomicInteger[10];
+
+    /** 每秒的统计数 */
+    private AtomicInteger sum;
+
+    /** 当前下标 */
+    private volatile int index;
+
+    public void init() {
+        for (int i = 0, len = count.length; i < len; i++) {
+            count[i] = new AtomicInteger(0);
         }
-        count++;
-        return MAX_QPS > count;
+        sum = new AtomicInteger(0);
+    }
+
+    public synchronized boolean grant() {
+        count[index].incrementAndGet();
+        return MAX_QPS > sum.incrementAndGet();
+    }
+
+    /**
+     * 每100毫秒执行一次
+     */
+    public void run() {
+        int tail = (index + 1) % count.length;
+        int valueByTail= count[tail].getAndSet(0);
+        sum.addAndGet(-valueByTail);
+        index = tail;
     }
 
     public void request() {

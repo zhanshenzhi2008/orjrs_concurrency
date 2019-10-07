@@ -43,7 +43,9 @@ public class LimiterMain {
                 try {
                     //AtomicLimiter limiter = new AtomicLimiter();
                     //SemaphoreLimiter limiter = new SemaphoreLimiter();
-                    QpsCountLimiter limiter = new QpsCountLimiter();
+                    // QpsCountLimiter limiter = new QpsCountLimiter();
+                    //QpsSlidingWindowLimiter limiter = new QpsSlidingWindowLimiter();
+                    QpsSlidingWindowLimiter2 limiter = new QpsSlidingWindowLimiter2();
                     Thread.sleep(0L);
                     log.info("{}开始请求", Thread.currentThread().getName());
                     limiter.request();
